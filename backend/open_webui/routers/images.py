@@ -89,6 +89,8 @@ IMAGE_CONFIG_KEYS = {
     'IMAGE_EDIT_ENGINE': 'images.edit.engine',
     'IMAGE_EDIT_MODEL': 'images.edit.model',
     'IMAGE_EDIT_SIZE': 'images.edit.size',
+    'IMAGE_EDIT_STEPS': 'images.edit.steps',
+    'IMAGE_EDIT_DENOISE': 'images.edit.denoise',
     'IMAGES_EDIT_OPENAI_API_BASE_URL': 'images.edit.openai.api_base_url',
     'IMAGES_EDIT_OPENAI_API_KEY': 'images.edit.openai.api_key',
     'IMAGES_EDIT_OPENAI_API_VERSION': 'images.edit.openai.api_version',
@@ -256,6 +258,8 @@ class ImagesConfig(BaseModel):
     IMAGE_EDIT_ENGINE: str
     IMAGE_EDIT_MODEL: str
     IMAGE_EDIT_SIZE: str | None
+    IMAGE_EDIT_STEPS: int | None
+    IMAGE_EDIT_DENOISE: float | None
 
     IMAGES_EDIT_OPENAI_API_BASE_URL: str
     IMAGES_EDIT_OPENAI_API_KEY: str
@@ -852,6 +856,8 @@ class EditImageForm(BaseModel):
     n: int | None = None
     negative_prompt: str | None = None
     background: str | None = None
+    steps: int | None = None
+    denoise: float | None = None
 
 
 @router.post('/edit')
@@ -1135,12 +1141,17 @@ async def image_edits(
                 log.debug('Error uploading images to ComfyUI: %s', e)
                 raise Exception('Failed to upload images to ComfyUI.')
 
+            edit_steps = form_data.steps if form_data.steps is not None else image_config.IMAGE_EDIT_STEPS
+            edit_denoise = form_data.denoise if form_data.denoise is not None else image_config.IMAGE_EDIT_DENOISE
+
             data = {
                 'image': comfyui_images,
                 'prompt': form_data.prompt,
                 **({'width': width} if width is not None else {}),
                 **({'height': height} if height is not None else {}),
                 **({'n': form_data.n} if form_data.n else {}),
+                **({'steps': edit_steps} if edit_steps is not None else {}),
+                **({'denoise': edit_denoise} if edit_denoise is not None else {}),
             }
 
             form_data = ComfyUIEditImageForm(

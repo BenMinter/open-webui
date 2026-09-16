@@ -1515,6 +1515,16 @@ IMAGE_EDIT_MODEL = os.getenv('IMAGE_EDIT_MODEL', '')
 
 IMAGE_EDIT_SIZE = os.getenv('IMAGE_EDIT_SIZE', '')
 
+# Only meaningful for the ComfyUI edit engine -- steps/denoise are img2img
+# sampler params with no equivalent on the openai/gemini edit backends.
+IMAGE_EDIT_STEPS = (
+    int(os.environ['IMAGE_EDIT_STEPS']) if os.environ.get('IMAGE_EDIT_STEPS') else None
+)
+
+IMAGE_EDIT_DENOISE = (
+    float(os.environ['IMAGE_EDIT_DENOISE']) if os.environ.get('IMAGE_EDIT_DENOISE') else None
+)
+
 ENABLE_OPENAI_IMAGE_EDIT_NORMALIZATION = os.getenv('ENABLE_OPENAI_IMAGE_EDIT_NORMALIZATION', 'true').lower() == 'true'
 
 IMAGES_EDIT_OPENAI_API_BASE_URL = os.getenv('IMAGES_EDIT_OPENAI_API_BASE_URL', OPENAI_API_BASE_URL)
@@ -3048,6 +3058,8 @@ DEFAULT_CONFIG = {
     'images.edit.engine': IMAGE_EDIT_ENGINE,
     'images.edit.model': IMAGE_EDIT_MODEL,
     'images.edit.size': IMAGE_EDIT_SIZE,
+    'images.edit.steps': IMAGE_EDIT_STEPS,
+    'images.edit.denoise': IMAGE_EDIT_DENOISE,
     'images.edit.openai.api_base_url': IMAGES_EDIT_OPENAI_API_BASE_URL,
     'images.edit.openai.api_version': IMAGES_EDIT_OPENAI_API_VERSION,
     'images.edit.openai.api_key': IMAGES_EDIT_OPENAI_API_KEY,

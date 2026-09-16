@@ -177,6 +177,9 @@ def _apply_workflow_nodes(workflow, nodes, model, payload):
             elif node.type == 'steps':
                 for node_id in node.node_ids:
                     workflow[node_id]['inputs'][node.key if node.key else 'steps'] = payload.steps
+            elif node.type == 'denoise':
+                for node_id in node.node_ids:
+                    workflow[node_id]['inputs'][node.key if node.key else 'denoise'] = payload.denoise
             elif node.type == 'seed':
                 seed = payload.seed if payload.seed else random.randint(0, 1125899906842624)
                 for node_id in node.node_ids:
@@ -225,6 +228,7 @@ class ComfyUIEditImageForm(BaseModel):
 
     steps: Optional[int] = None
     seed: Optional[int] = None
+    denoise: Optional[float] = None
 
 
 async def comfyui_edit_image(model: str, payload: ComfyUIEditImageForm, client_id, base_url, api_key):
